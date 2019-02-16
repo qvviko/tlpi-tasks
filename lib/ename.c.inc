@@ -1,8 +1,4 @@
-+/* ename.c.inc
-+
-+   Built on GNU/Linux x86_64 with glibc 2.28
-+*/
- static char *ename[] = {
+static char *ename[] = {
      /*   0 */ "",
      /*   1 */ "EPERM", "ENOENT", "ESRCH", "EINTR", "EIO", "ENXIO",
      /*   7 */ "E2BIG", "ENOEXEC", "EBADF", "ECHILD",
