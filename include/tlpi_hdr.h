@@ -22,6 +22,7 @@
 #include <stdlib.h>     /* Prototypes of commonly used library functions,
                            plus EXIT_SUCCESS and EXIT_FAILURE constants */
 #include <unistd.h>     /* Prototypes for many system calls */
+#include <fcntl.h>
 #include <errno.h>      /* Declares errno and defines error constants */
 #include <string.h>     /* Commonly used string-handling functions */
 
@@ -29,6 +30,7 @@
                            arguments (getInt(), getLong()) */
 
 #include "../lib/error_functions.h"  /* Declares our error-handling functions */
+
 
 /* Unfortunately some UNIX implementations define FALSE and TRUE -
    here we'll undefine them */
