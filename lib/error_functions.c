@@ -16,15 +16,18 @@
 */
 #include <stdarg.h>
 #include "error_functions.h"
-#include "../include/tlpi_hdr.h"
+#include "tlpi_hdr.h"
 #include "ename.c.inc"          /* Defines ename and MAX_ENAME */
+#include "ctype.h"
 
 #ifdef __GNUC__                 /* Prevent 'gcc -Wall' complaining  */
+
 __attribute__ ((__noreturn__))  /* if we call this function as last */
 #endif                          /* statement in a non-void function */
+
+#define printable(ch) (isprint((unsigned char) ch) ? ch: '#')
 static void
-terminate(Boolean useExit3)
-{
+terminate(Boolean useExit3) {
     char *s;
 
     /* Dump core if EF_DUMPCORE environment variable is defined and
@@ -52,8 +55,7 @@ terminate(Boolean useExit3)
 
 static void
 outputError(Boolean useErr, int err, Boolean flushStdout,
-        const char *format, va_list ap)
-{
+            const char *format, va_list ap) {
 #define BUF_SIZE 500
     char buf[BUF_SIZE], userMsg[BUF_SIZE], errText[BUF_SIZE];
 
@@ -61,8 +63,8 @@ outputError(Boolean useErr, int err, Boolean flushStdout,
 
     if (useErr)
         snprintf(errText, BUF_SIZE, " [%s %s]",
-                (err > 0 && err <= MAX_ENAME) ?
-                ename[err] : "?UNKNOWN?", strerror(err));
+                 (err > 0 && err <= MAX_ENAME) ?
+                 ename[err] : "?UNKNOWN?", strerror(err));
     else
         snprintf(errText, BUF_SIZE, ":");
 
@@ -78,8 +80,7 @@ outputError(Boolean useErr, int err, Boolean flushStdout,
    return to caller */
 
 void
-errMsg(const char *format, ...)
-{
+errMsg(const char *format, ...) {
     va_list argList;
     int savedErrno;
 
@@ -96,8 +97,7 @@ errMsg(const char *format, ...)
    terminate the process */
 
 void
-errExit(const char *format, ...)
-{
+errExit(const char *format, ...) {
     va_list argList;
 
     va_start(argList, format);
@@ -123,8 +123,7 @@ errExit(const char *format, ...)
    invoking exit handlers that were established by the caller. */
 
 void
-err_exit(const char *format, ...)
-{
+err_exit(const char *format, ...) {
     va_list argList;
 
     va_start(argList, format);
@@ -138,8 +137,7 @@ err_exit(const char *format, ...)
    the error number in 'errnum' */
 
 void
-errExitEN(int errnum, const char *format, ...)
-{
+errExitEN(int errnum, const char *format, ...) {
     va_list argList;
 
     va_start(argList, format);
@@ -152,8 +150,7 @@ errExitEN(int errnum, const char *format, ...)
 /* Print an error message (without an 'errno' diagnostic) */
 
 void
-fatal(const char *format, ...)
-{
+fatal(const char *format, ...) {
     va_list argList;
 
     va_start(argList, format);
@@ -166,8 +163,7 @@ fatal(const char *format, ...)
 /* Print a command usage error message and terminate the process */
 
 void
-usageErr(const char *format, ...)
-{
+usageErr(const char *format, ...) {
     va_list argList;
 
     fflush(stdout);           /* Flush any pending stdout */
@@ -181,12 +177,29 @@ usageErr(const char *format, ...)
     exit(EXIT_FAILURE);
 }
 
+/* Print an error message, command usage and terminate the process */
+void
+usageError(const char *msg, int opt, const char *format, ...) {
+    va_list argList;
+
+    fflush(stdout);           /* Flush any pending stdout */
+
+    if (msg != NULL && opt != 0)
+        fprintf(stderr, "%s (-%c)\n", msg, printable(opt));
+    fprintf(stderr, "Usage: ");
+    va_start(argList, format);
+    vfprintf(stderr, format, argList);
+    va_end(argList);
+
+    fflush(stderr);       /* In case stderr is not line-buffered */
+    exit(EXIT_FAILURE);
+}
+
 /* Diagnose an error in command-line arguments and
    terminate the process */
 
 void
-cmdLineErr(const char *format, ...)
-{
+cmdLineErr(const char *format, ...) {
     va_list argList;
 
     fflush(stdout);           /* Flush any pending stdout */
