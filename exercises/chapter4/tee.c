@@ -9,14 +9,15 @@ int main(int argc, char *argv[]) {
     ssize_t num_read;
     int *fds = malloc(maxLen * sizeof(int));
     char buffer[MAX_BUFFER_SIZE];
-    fds[curLen] = STDOUT; /* First output is going to the stdout */
+    fds[0] = STDOUT; /* First output is going to the stdout */
     Boolean append = FALSE;
-    int flags = O_WRONLY | O_CREAT;
+    int flags = O_RDWR | O_CREAT;
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH; /* rw-rw-rw */
 
-    if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+    if (argc == 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
         usageErr("%s [options] filename", argv[0]);
     }
+
     while ((opt = getopt(argc, argv, ":a")) != -1) {
         switch (opt) {
             case 'a':
@@ -31,16 +32,8 @@ int main(int argc, char *argv[]) {
 
     if (append) {
         flags |= O_APPEND;
-
-        // This might be useless
-        int stdout_flags = fcntl(STDOUT, F_GETFL);
-        if (stdout_flags == -1) {
-            errExit("fcntl get flags of stdout");
-        }
-        stdout_flags |= O_APPEND;
-        if (fcntl(STDOUT, F_SETFL, stdout_flags) == -1) {
-            errExit("fcntl set flags on stdout");
-        }
+    } else {
+        flags |= O_TRUNC;
     }
 
     while (argc != optind) {
@@ -62,8 +55,8 @@ int main(int argc, char *argv[]) {
         if (num_read == -1) {
             errExit("fail on read");
         }
-        for (int fd_n = 0; fd_n < curLen; ++fd_n) {
-            if (write(fds[curLen], buffer, (size_t) num_read) == -1) {
+        for (int fd_n = 0; fd_n < curLen; fd_n++) {
+            if (write(fds[fd_n], buffer, (size_t) num_read) == -1) {
                 errExit("fail on write");
             }
         }
