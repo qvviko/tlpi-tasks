@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 2 || strcmp(argv[1], "-h") == 0)
-        usageErr("%s filename", argv[1]);
+        usageErr("%s filename\n", argv[1]);
 
     int flags = O_RDWR | O_APPEND, fd;
     if ((fd = open(argv[1], flags)) == -1)
