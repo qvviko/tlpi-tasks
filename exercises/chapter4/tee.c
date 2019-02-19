@@ -2,7 +2,7 @@
 
 #define STDIN 0
 #define STDOUT 1
-#define MAX_BUFFER_SIZE 100
+#define MAX_BUFFER_SIZE 1024
 
 int main(int argc, char *argv[]) {
     int opt, maxLen = 4, curLen = 1;
