@@ -19,4 +19,7 @@ target_link_libraries(my_dupes LINK_PUBLIC tlpi)
 add_executable(writes writes.c)
 target_link_libraries(writes LINK_PUBLIC tlpi)
 
+add_executable(v_package v_package.c v_package.h)
+target_link_libraries(v_package LINK_PUBLIC tlpi)
+
 link_libraries(${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
